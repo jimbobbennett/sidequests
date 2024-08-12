@@ -1,8 +1,8 @@
-# SideQuests: Your Open-Source Appwrite Todo Companion
+# SideQuests: Your Open-Source Todo Companion
 
 ##  ⚔️ Conquer Your Daily Quests with SideQuests!
 
-SideQuests is a beautifully crafted Flutter application designed to simplify your task management with the power of Appwrite. Leveraging the robust features of Appwrite's backend-as-a-service, this open-source project empowers you to build your own fully-functional todo list application.
+SideQuests is a beautifully crafted Flutter application designed to simplify your task management with the power of Appwrite and Launch Darkly. Leveraging the robust features of Appwrite's backend-as-a-service and Launch Darkly feature flags, this open-source project empowers you to build your own fully-functional todo list application.
 
 ## ✨ Features
 
