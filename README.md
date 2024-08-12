@@ -25,7 +25,7 @@ Follow these steps to get SideQuests up and running on your local machine:
 1. **Navigate to the project directory:**
 
    ```bash
-   cd sidequests
+   cd sidequests/mobile_app
    ```
 
 1. **Install dependencies:**
