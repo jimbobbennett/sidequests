@@ -40,48 +40,61 @@ class SQliteDBHelper implements SideQuestDBHelper {
     );
   }
 
-  /// Get all the side quests from the database
+  /// Retrieves a list of side quests from the database.
+  ///
+  /// This function asynchronously fetches side quest documents from the database
+  /// and converts them into [SideQuest] objects.
+  ///
+  /// Returns a [Future] that resolves to a [List] of [SideQuest] objects.
   @override
   Future<List<SideQuest>> getSideQuests() async {
     final data = await _database.query(sideQuestsTableName);
 
     return data.map((e) {
-      return SideQuest(
-          id: e['id'].toString(),
-          name: e['name'].toString(),
-          complete: int.parse(e['complete'].toString()) == 1);
+      return SideQuest(id: e['id'].toString(), name: e['name'].toString(), complete: int.parse(e['complete'].toString()) == 1);
     }).toList();
   }
 
-  /// Create a new side quest in the database.
+  /// Creates a new side quest in the database.
   ///
-  /// [name] is the name of the side quest to be created.
+  /// This function takes a [name] parameter and creates a new side quest
+  /// document in the database with the given name and a default 'complete'
+  /// status of false.
   ///
-  /// Returns a [Future] that resolves with the newly created [SideQuest] object.
+  /// Parameters:
+  ///   - [name]: A String representing the name of the side quest.
+  ///
+  /// Returns:
+  ///   A Future<SideQuest> representing the newly created side quest.
   @override
   Future<SideQuest> createSideQuest(String name) async {
     // Insert a new side quest into the database and retrieve the generated ID.
-    final id = await _database.insert(sideQuestsTableName, {'name': name, 'complete': false});
+    final id = await _database.insert(sideQuestsTableName, {'name': name, 'complete': 0});
     // Create a new SideQuest object with the retrieved ID, provided name, and initial completion status of false.
     return SideQuest(id: id.toString(), name: name, complete: false);
   }
 
-  /// Update the completion status of a side quest in the database.
-  /// [id] is the ID of the side quest to be updated.
-  /// [complete] is the new completion status of the side quest.
-  /// Returns a [Future] that resolves with the updated [SideQuest] object.
-  /// If the side quest with the provided ID doesn't exist, the method will throw an error.
+  /// Updates the completion status of a SideQuest.
+  ///
+  /// This method updates the 'complete' field of a SideQuest document in the database.
+  ///
+  /// Parameters:
+  /// - [id]: The unique identifier of the SideQuest to be updated.
+  /// - [complete]: A boolean value indicating whether the SideQuest is completed or not.
+  ///
+  /// Returns:
+  /// A [Future] that resolves to a [SideQuest] object representing the updated SideQuest.
+  ///
+  /// Throws:
+  /// May throw exceptions related to database operations if the update fails.
   @override
   Future<SideQuest> updateSideQuest(String id, bool complete) async {
     // Update the completion status of the side quest with the provided ID.
-    await _database.update(sideQuestsTableName, {'complete': complete ? 1 : 0},
-        where: 'id = ?', whereArgs: [id]);
+    await _database.update(sideQuestsTableName, {'complete': complete ? 1 : 0}, where: 'id = ?', whereArgs: [id]);
     // Retrieve the updated side quest from the database.
     final data = await _database.query(sideQuestsTableName, where: 'id = ?', whereArgs: [id]);
     // Create a new SideQuest object with the updated completion status.
     return SideQuest(
-        id: data.first['id'].toString(),
-        name: data.first['name'].toString(),
-        complete: int.parse(data.first['complete'].toString()) == 1);
+        id: data.first['id'].toString(), name: data.first['name'].toString(), complete: int.parse(data.first['complete'].toString()) == 1);
   }
 }
