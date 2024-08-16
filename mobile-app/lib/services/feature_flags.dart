@@ -18,7 +18,7 @@ extension FlagsExtension on Flags {
     switch (this) {
       case Flags.useAppwrite:
         // Returns the key for the useAppwrite flag
-        return "use-app-write";
+        return "use-appwrite";
     }
   }
 }

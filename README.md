@@ -1,79 +1,86 @@
 # SideQuests: Your Open-Source Todo Companion
 
-##  ⚔️ Conquer Your Daily Quests with SideQuests!
+This repo contains an example ToDo app using Flutter, with ToDo items considered as side quests. What makes this app different to other reference ToDo app implementations is that it is configurable via feature flag to be either all local, or running in the cloud. This repo is designed to show 3 concepts:
 
-SideQuests is a beautifully crafted Flutter application designed to simplify your task management with the power of Appwrite and Launch Darkly. Leveraging the robust features of Appwrite's backend-as-a-service and Launch Darkly feature flags, this open-source project empowers you to build your own fully-functional todo list application.
+- How you can leverage [Pieces for Developers](https://pieces.app) to help you develop an app
+- How to use [Launch Darkly](https://launchdarkly.com) to control the features of your app, allowing you to test out a feature for some users before a full roll-out.
+- How to use [Appwrite](https://appwrite.io) to provide a back end for a Flutter app.
 
-## ✨ Features
+> Remember to install [Pieces](https://pieces.app) and the [browser extension for your current browser](https://pieces.app/plugins/web-extension) when reading this code, as that way you can quickly save code snippets to Pieces using the **Copy and save button** that appears when you hover over any code.
 
-- **Seamless Appwrite Integration:** Experience the ease of use and scalability of Appwrite for user authentication, data storage, and API management.
-- **Intuitive Todo List:** Create, manage, and complete your side quests with a user-friendly interface.
-- **Real-time Updates:** Witness your changes reflected instantly with Appwrite's real-time database capabilities.
-- **Secure Authentication:** Rest assured with Appwrite's built-in authentication system, keeping your data safe and sound.
-- **LaunchDarkly Feature Flags:** Experience the future of development with LaunchDarkly's powerful feature flag management, allowing for controlled rollouts and A/B testing. 
+Launch Darkly is used to quickly flip between offline only, and Appwrite for the storage of the side quests, allowing you to run this app fully offline for a trial rollout, then flip to the cloud to support synching of side quests.
 
-## 🚀 Getting Started
+## Configure the cloud services
 
-Follow these steps to get SideQuests up and running on your local machine:
+You will need to manually configure the relevant cloud services, then store the appropriate API keys in the [`.env`](./mobile-app/.env) file. This repo doesn't ship with a `.env` file, and this file is ignored in the `.gitignore` to avoid accidentally committing your keys to source code control. There is an `.env.example` file that shows you the keys you need to set.
 
-1. **Clone the repository:**
+1. Copy `.env.example` to `.env`
+1. Set up the services listed below and set the relevant keys in the `.env` file.
 
-   ```bash
-   git clone https://github.com/jimbobbennett/sidequests.git
+### Launch Darkly
+
+1. Create a LaunchDarkly account at [https://launchdarkly.com](https://launchdarkly.com) if you don't have one.
+1. Create a new LaunchDarkly project and obtain your mobile key.
+1. Configure your LaunchDarkly mobile key in the `.env` file.
+
+   ```ini
+   LAUNCHDARKLY_MOBILE_KEY=mob-xxx
    ```
 
-1. **Navigate to the project directory:**
+1. Add a [new custom boolean flag](https://docs.launchdarkly.com/home/flags/custom) with the key `use-appwrite`, and tick the **SDKs using Mobile Key** checkbox
+
+   ![The new custom Use appwrite boolean flag](./img/use-appwrite-flag.webp)
+   ![The use SDKs using mobile key setting](./img/flag-use-mobile-key.webp)
+
+
+### Appwrite
+
+1. Create an Appwrite account at [https://appwrite.io](https://appwrite.io).
+1. Create a new Appwrite project.
+1. Create an Appwrite database called `sidequests`
+1. Create an Appwrite collection in your database called `sidequests`, with a string column called `name`, and a bool column called `completed`.
+1. Configure your Appwrite project ID, database ID, and collection ID in the `.env` file.
+
+   ```ini
+   APPWRITE_PROJECT_ID=xxx
+   APPWRITE_DATABASE_ID=sidequests
+   APPWRITE_COLLECTION_ID=xxx
+   ```
+
+## Build and run the app
+
+This is a Flutter app, so you will need to have Flutter installed by following the [Flutter install documentation](https://docs.flutter.dev/get-started/install).
+
+1. Navigate to the project directory:
 
    ```bash
    cd sidequests/mobile_app
    ```
 
-1. **Install dependencies:**
+1. Install dependencies:
 
    ```bash
    flutter pub get
    ```
 
-1. Create the `.env` file
-
-    - Copy the `.env.example` file to `.env`
-
-1. **Set up Appwrite:**
-
-    - Create an Appwrite account at [https://appwrite.io](https://appwrite.io).
-    - Create a new Appwrite project.
-    - Create an Appwrite database called `sidequests`
-    - Create an Appwrite collection in your database called `sidequests`, with a string column called `name`, and a bool column called `completed`.
-    - Configure your Appwrite project ID, database ID, and collection ID in the `.env` file.
-
-1. **Set up LaunchDarkly (Optional):**
-
-    - Create a LaunchDarkly account at [https://launchdarkly.com](https://launchdarkly.com).
-    - Create a new LaunchDarkly project and obtain your mobile key.
-    - Configure your LaunchDarkly mobile key in the `.env` file.
-
-1. **Run the application:**
+1.Run the application:
 
    ```bash
    flutter run
    ```
 
-## 🛠️ Built With
+## Use the feature flag
 
-- **Flutter:** A powerful and expressive framework for building beautiful native applications.
-- **Appwrite:** A secure and scalable backend-as-a-service for web, mobile, and Flutter developers.
-- **LaunchDarkly:** A feature management platform for safe and agile feature rollouts. 
+To control the feature flag, you can turn it on and off from the Launch Darkly project. By default with a boolean flag, when it is turned off, evaluations will return `false`, and when turned on, evaluations will return `true`. There are more controls for this, including targeting certain users, and you can read about this in the [Launch Darkly flags documentation](https://docs.launchdarkly.com/home/flags/toggle).
 
-## 🤝 Contributing
+When you first create the flag, it will be off and evaluate to `false`. This means when you run SideQuests, you will not need to log in, and all your sidequests will be stored locally in a SQLite database.
 
-Contributions are welcome and encouraged!  To contribute to SideQuests:
+To flip to using Appwrite, turn this flag on, select **Review and Save**, enter the environment name to confirm - this should be `production`, then select **Save**.
 
-1. **Fork the repository.**
-2. **Create a new branch for your feature or bug fix.**
-3. **Make your changes and commit them.**
-4. **Push your changes to your forked repository.**
-5. **Submit a pull request.**
+![Turning the flag on and confirming the environment](./img/turn-flag-on.gif)
 
-##  📄 License
+The app will then reload and you will then need to create an account and log in. Once done, you can save side quests to Appwrite.
+
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. 
